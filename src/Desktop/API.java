@@ -3,9 +3,7 @@
  */
 package Desktop;
 import java.awt.*;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.net.Socket;
 import org.json.*;
 
@@ -26,22 +24,24 @@ public class API {
 
     private static final int PORT =2551;
 
-    private static ObjectOutputStream out = null;
-    private static ObjectInputStream in = null;
+    private static PrintWriter out = null;
+    private static BufferedReader in = null;
 
-    public static ObjectInputStream getIn() {
+
+
+    public static BufferedReader getIn() {
         return in;
     }
 
-    public static void setIn(ObjectInputStream in) {
+    public static void setIn(BufferedReader in) {
         API.in = in;
     }
 
-    public static ObjectOutputStream getOut() {
+    public static PrintWriter getOut() {
         return out;
     }
 
-    public static void setOut(ObjectOutputStream out) {
+    public static void setOut(PrintWriter out) {
         API.out = out;
     }
 
@@ -53,8 +53,15 @@ public class API {
             public void run() {
                 try {
                     socket = new Socket("localhost", PORT);   //ip телефона 192.168.43.64 //ip дом 192.168.1.197
-                    setOut(new ObjectOutputStream(socket.getOutputStream()));
-                    setIn(new ObjectInputStream(socket.getInputStream()));
+                    setOut(new PrintWriter(socket.getOutputStream(), true));
+                    setIn(new BufferedReader(new InputStreamReader(socket.getInputStream())));
+
+
+                    while (true)
+                    {
+                        String line = in.readLine();
+                        System.out.println(line);
+                    }
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -66,33 +73,23 @@ public class API {
 
 
     public static void sendString(String msg) {
-        ObjectOutputStream out = getOut();
-        try {
-            // out = new ObjectOutputStream(socket.getOutputStream());
-            out.writeUTF(msg);
-            setOut(out);
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } /*finally {
-            if(out != null)
-                try {
-                    out.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-           }
-         */
+        PrintWriter out = getOut();
+        // out = new ObjectOutputStream(socket.getOutputStream());
+        out.println(msg);
+
+        setOut(out);
+        //out.flush();
+        System.out.println(msg);
 
     }
 
     public static void receiveString() {
-        ObjectInputStream in = getIn();
+        BufferedReader in = getIn();
         try {
             // out = new ObjectOutputStream(socket.getOutputStream());
            // update[count_update] = new JSONObject(in.readUTF());
             //count_update++;
-            receiveJson(in.readUTF());
+            receiveJson(in.readLine());
             setIn(in);
             //out.writeUTF(msg);
         //    setOut(out);
