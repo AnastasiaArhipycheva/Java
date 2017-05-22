@@ -51,7 +51,7 @@ public class PaintServer {
                     //for (ObjectOutputStream writer : writers) {
                     for (PrintWriter writer : writers) {
                         System.out.println(writer.toString());
-                        writer.write(json);
+                        writer.println(json);
                         writer.flush();
                     }
                     // in.close();

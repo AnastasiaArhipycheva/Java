@@ -56,6 +56,13 @@ public class API {
                     setOut(new PrintWriter(socket.getOutputStream(), true));
                     setIn(new BufferedReader(new InputStreamReader(socket.getInputStream())));
 
+
+                    while (true)
+                    {
+                        String line = in.readLine();
+                        System.out.println(line);
+                    }
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -68,10 +75,10 @@ public class API {
     public static void sendString(String msg) {
         PrintWriter out = getOut();
         // out = new ObjectOutputStream(socket.getOutputStream());
-        out.write(msg);
+        out.println(msg);
 
         setOut(out);
-        out.flush();
+        //out.flush();
         System.out.println(msg);
 
     }
