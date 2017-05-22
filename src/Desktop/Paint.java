@@ -2,8 +2,6 @@
  * Created by Администратор on 20.05.2017.
  */
 
-package Desktop;
-
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -15,7 +13,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.util.*;
-import Desktop.*;
 // import org.json.simple.JSONObject;
 
 //import org.json.simple.*;
@@ -24,9 +21,11 @@ import Desktop.*;
 
 @SuppressWarnings("serial")
 public class Paint extends JFrame {
+
+
     JButton brushBut, lineBut, ellipseBut, rectBut, strokeBut, fillBut;
 
- //   JSlider transSlider;
+    //   JSlider transSlider;
 //    JLabel transLabel;
     static ObjectInputStream in;
     static ObjectOutputStream out;
@@ -38,7 +37,7 @@ public class Paint extends JFrame {
 
     int currentAction = 1;
 
- //   float transparentVal = 1.0f;
+    //   float transparentVal = 1.0f;
 
     Color strokeColor = Color.BLACK, fillColor = Color.BLACK;
 
@@ -51,20 +50,15 @@ public class Paint extends JFrame {
 /*
         try {
             Socket socket = new Socket("localhost", 2550);
-
             in = new ObjectInputStream(socket.getInputStream());
             out = new ObjectOutputStream(socket.getOutputStream());
-
         } catch (UnknownHostException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
 */
         API.createSocket();
-
-
 
     }
 
@@ -85,25 +79,25 @@ public class Paint extends JFrame {
 
 
         strokeBut = makeMeColorButton("Stroke", 5, true);
-       // fillBut = makeMeColorButton("Fill", 6, false);
+        // fillBut = makeMeColorButton("Fill", 6, false);
 
         theBox.add(brushBut);
         theBox.add(lineBut);
         theBox.add(ellipseBut);
         theBox.add(rectBut);
         theBox.add(strokeBut);
-       // theBox.add(fillBut);
+        // theBox.add(fillBut);
 
-      //  transLabel = new JLabel("Transparent: 1");
+        //  transLabel = new JLabel("Transparent: 1");
 
- //       transSlider = new JSlider(1, 99, 99);
+        //       transSlider = new JSlider(1, 99, 99);
 
-      //  ListenForSlider lForSlider = new ListenForSlider();
+        //  ListenForSlider lForSlider = new ListenForSlider();
 
 
- //       transSlider.addChangeListener(lForSlider);
+        //       transSlider.addChangeListener(lForSlider);
 //        theBox.add(transLabel);
-  //      theBox.add(transSlider);
+        //      theBox.add(transSlider);
 
         buttonPanel.add(theBox);
 
@@ -155,9 +149,9 @@ public class Paint extends JFrame {
 
 
         ArrayList<Shape> shapes = new ArrayList<Shape>();
-    //    ArrayList<Color> shapeFill = new ArrayList<Color>();
+        //    ArrayList<Color> shapeFill = new ArrayList<Color>();
         ArrayList<Color> shapeStroke = new ArrayList<Color>();
- //       ArrayList<Float> transPercent = new ArrayList<Float>();
+        //       ArrayList<Float> transPercent = new ArrayList<Float>();
         Point drawStart, drawEnd;
 
 
@@ -173,8 +167,6 @@ public class Paint extends JFrame {
                 }
 
 
-
-
                 public void mouseReleased(MouseEvent e) {
 
 
@@ -184,23 +176,23 @@ public class Paint extends JFrame {
                         if (currentAction == 2) {
                             aShape = drawLine(drawStart.x, drawStart.y,
                                     e.getX(), e.getY());
-                                    API.sendLine(drawStart.x, drawStart.y,  e.getX(), e.getY());
+                            API.sendLine(drawStart.x, drawStart.y,  e.getX(), e.getY());
                         } else if (currentAction == 3) {
                             aShape = drawEllipse(drawStart.x, drawStart.y,
                                     e.getX(), e.getY());
-                                    API.sendCircle(drawStart.x, drawStart.y, e.getX(), e.getY());
+                            API.sendCircle(drawStart.x, drawStart.y, e.getX(), e.getY());
                         } else if (currentAction == 4) {
                             aShape = drawRectangle(drawStart.x, drawStart.y,
                                     e.getX(), e.getY());
-                                    API.sendRect(drawStart.x, drawStart.y, e.getX(), e.getY());
+                            API.sendRect(drawStart.x, drawStart.y, e.getX(), e.getY());
                         }
 
                         shapes.add(aShape);
 
-                   //     shapeFill.add(fillColor);
+                        //     shapeFill.add(fillColor);
                         shapeStroke.add(strokeColor);
 
-            //            transPercent.add(transparentVal);
+                        //            transPercent.add(transparentVal);
                         drawStart = null;
                         drawEnd = null;
 
@@ -216,13 +208,13 @@ public class Paint extends JFrame {
                         int y = e.getY();
                         Shape aShape = null;
                         API.sendPoint(x,y,strokeColor);
-               //         strokeColor = fillColor;
+                        //         strokeColor = fillColor;
                         aShape = drawBrush(x, y, 5, 5);
                         shapes.add(aShape);
-               //         shapeFill.add(fillColor);
+                        //         shapeFill.add(fillColor);
                         shapeStroke.add(strokeColor);
 
-           //             transPercent.add(transparentVal);
+                        //             transPercent.add(transparentVal);
                     }
 
                     drawEnd = new Point(e.getX(), e.getY());
@@ -231,7 +223,36 @@ public class Paint extends JFrame {
             });
         }
 
+        public void update() {
+         //   Shape aShape = null;
+                switch (API.current) {
+                    case 0 :
+                        shapes.addAll(API.shapes);
+                        shapeStroke.addAll(API.shapeStroke);
+                       // repaint();  Если раскоментировать - обновляется сразу, но жутко тормозит
+                        break;
+                        /*
+                    case 1 :
+                        pathdraw.moveTo(x1, y1);
+                        pathdraw.lineTo(x2, y2);
+                        break;
+                    case 2:
+                        RectF oval = new RectF(x1,y1,x2,y2);
+                        pathdraw.addOval(oval,Path.Direction.CW);
+                        break;
+                    case 3:
+                        pathdraw.addRect(x1,y1, x2, y2, Path.Direction.CW);
+                        break;
+                    default:
+                        break;
+                        */
+                }
+        }
+
+
         public void paint(Graphics g) {
+
+            if(API.flag) update();
 
             graphSettings = (Graphics2D) g;
 
@@ -241,18 +262,18 @@ public class Paint extends JFrame {
             graphSettings.setStroke(new BasicStroke(4));
 
             Iterator<Color> strokeCounter = shapeStroke.iterator();
-      //      Iterator<Color> fillCounter = shapeFill.iterator();
+            //      Iterator<Color> fillCounter = shapeFill.iterator();
 
-  //          Iterator<Float> transCounter = transPercent.iterator();
+            //          Iterator<Float> transCounter = transPercent.iterator();
             for (Shape s : shapes) {
 
-      //          graphSettings.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transCounter.next()));
+                //          graphSettings.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, transCounter.next()));
 
                 graphSettings.setPaint(strokeCounter.next());
                 graphSettings.draw(s);
 
-        //        graphSettings.setPaint(fillCounter.next());
-       //         graphSettings.fill(s);
+                //        graphSettings.setPaint(fillCounter.next());
+                //         graphSettings.fill(s);
             }
 
             if (drawStart != null && drawEnd != null) {
@@ -316,14 +337,9 @@ public class Paint extends JFrame {
 
 /*
     private class ListenForSlider implements ChangeListener {
-
         public void stateChanged(ChangeEvent e) {
-
  //           if (e.getSource() == transSlider) {
-
-
       //          transLabel.setText("Transparent: " + dec.format(transSlider.getValue() * .01));
-
       //          transparentVal = (float) (transSlider.getValue() * .01);
             }
         }

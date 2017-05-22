@@ -1,10 +1,12 @@
 /**
  * Created by Администратор on 20.05.2017.
  */
-package Desktop;
 import java.awt.*;
+import java.awt.geom.Ellipse2D;
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
+
 import org.json.*;
 
 public class API {
@@ -19,8 +21,14 @@ public class API {
 //        }
 //    }
 
-    public static JSONObject[] update = new JSONObject[10000];
-    public static int count_update=0;
+
+ //   public static int count_update=0;
+    public static boolean flag = false;
+    public static float x1, x2, y1, y2;
+    public static int current;
+    public static ArrayList<Shape> shapes = new ArrayList<Shape>();
+    public static ArrayList<Color> shapeStroke = new ArrayList<Color>();
+
 
     private static final int PORT =2551;
 
@@ -52,7 +60,7 @@ public class API {
             @Override
             public void run() {
                 try {
-                    socket = new Socket("localhost", PORT);   //ip телефона 192.168.43.64 //ip дом 192.168.1.197
+                    socket = new Socket("192.168.1.197", PORT);   //ip телефона 192.168.43.64 //ip дом 192.168.1.197
                     setOut(new PrintWriter(socket.getOutputStream(), true));
                     setIn(new BufferedReader(new InputStreamReader(socket.getInputStream())));
 
@@ -61,6 +69,7 @@ public class API {
                     {
                         String line = in.readLine();
                         System.out.println(line);
+                        receiveJson(line);
                     }
 
                 } catch (IOException e) {
@@ -87,13 +96,13 @@ public class API {
         BufferedReader in = getIn();
         try {
             // out = new ObjectOutputStream(socket.getOutputStream());
-           // update[count_update] = new JSONObject(in.readUTF());
+            // update[count_update] = new JSONObject(in.readUTF());
             //count_update++;
             receiveJson(in.readLine());
             setIn(in);
             //out.writeUTF(msg);
-        //    setOut(out);
-        //    out.flush();
+            //    setOut(out);
+            //    out.flush();
         } catch (IOException e) {
             e.printStackTrace();
         } /*finally {
@@ -127,11 +136,30 @@ public class API {
         }
 
     }
-    public static void receivePoint(JSONObject json) {
-        float x = (float) json.optDouble("x");
-        float y = (float) json.optDouble("y");
-        System.out.println("point"+ "x" +x+ "y" +y);
 
+    public static void deleteflag() {
+        flag =false;
+    }
+
+    public static void receivePoint(JSONObject json) {
+        Shape aShape = null;
+      //  Color col = Color.LIGHT_GRAY;
+        flag = true;
+        x1 = (float) json.optDouble("x");
+        y1 = (float) json.optDouble("y");
+        Color col = new Color(Integer.parseInt((String)json.optString("color")));
+     //   current = 0;
+        aShape = drawBrush((int)x1, (int)y1, 5, 5);
+        shapes.add(aShape);
+        shapeStroke.add(col);
+        //    System.out.println("point"+ "x" +x+ "y" +y);
+    //    Paint.DrawResive(0, (int)x, (int)y, 0, 0);
+    }
+
+    private static Ellipse2D.Float drawBrush(
+            int x1, int y1, int brushStrokeWidth, int brushStrokeHeight) {
+        return new Ellipse2D.Float(
+                x1, y1, brushStrokeWidth, brushStrokeHeight);
     }
 
     public static void receiveLine(JSONObject json) {
@@ -139,6 +167,7 @@ public class API {
         float x2 = (float) json.optDouble("x2");
         float y1 = (float) json.optDouble("y1");
         float y2 = (float) json.optDouble("y2");
+    //    Paint.DrawResive(1, (int)x1, (int)y1, (int)x2, (int)y2);
     }
 
     public static void receiveCircle(JSONObject json) {
@@ -146,6 +175,7 @@ public class API {
         float x2 = (float) json.optDouble("x2");
         float y1 = (float) json.optDouble("y1");
         float y2 = (float) json.optDouble("y2");
+    //    Paint.DrawResive(2, (int)x1, (int)y1, (int)x2, (int)y2);
     }
 
     public static void receiveRect(JSONObject json) {
@@ -153,6 +183,7 @@ public class API {
         float x2 = (float) json.optDouble("x2");
         float y1 = (float) json.optDouble("y1");
         float y2 = (float) json.optDouble("y2");
+    //    Paint.DrawResive(3, (int)x1, (int)y1, (int)x2, (int)y2);
     }
 
 
@@ -160,7 +191,7 @@ public class API {
     public static void sendPoint(float x, float y, Color color) {
         JSONObject object = new JSONObject();
         try {
-            object.put("color", color.toString());
+            object.put("color", Integer.toString(color.getRGB()));
             object.put("type", "point");
             object.put("x", x);
             object.put("y", y);
