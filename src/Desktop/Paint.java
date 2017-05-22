@@ -141,6 +141,7 @@ public class Paint extends JFrame {
                     strokeColor = JColorChooser.showDialog(null, "Pick a Stroke", Color.BLACK);
                 } else {
                     fillColor = JColorChooser.showDialog(null, "Pick a Fill", Color.BLACK);
+
                 }
             }
         });
