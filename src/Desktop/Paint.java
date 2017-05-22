@@ -196,7 +196,6 @@ public class Paint extends JFrame {
                         }
 
                         shapes.add(aShape);
-                        API.receiveString();
 
                    //     shapeFill.add(fillColor);
                         shapeStroke.add(strokeColor);
@@ -220,7 +219,6 @@ public class Paint extends JFrame {
                //         strokeColor = fillColor;
                         aShape = drawBrush(x, y, 5, 5);
                         shapes.add(aShape);
-                        API.receiveString();
                //         shapeFill.add(fillColor);
                         shapeStroke.add(strokeColor);
 
